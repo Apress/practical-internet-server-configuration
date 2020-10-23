@@ -1,6 +1,6 @@
 # Apress Source Code
 
-This repository accompanies [*Practical Internet Server Configuration*] by Robert La Lau (Apress, 2021).
+This repository accompanies *Practical Internet Server Configuration* by Robert La Lau (Apress, 2021).
 
 [comment]: #cover
 ![Cover image](%isbn%.jpg)
