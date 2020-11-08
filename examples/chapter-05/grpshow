@@ -1,0 +1,119 @@
+#!/usr/bin/env bash
+
+################################################################################
+#
+# This script lists the members of given groups.
+#
+# Save this script as /usr/local/bin/grpshow and make it executable:
+#
+#    # chown root:root /usr/local/bin/grpshow
+#    # chmod 755 grpshow
+#
+# Call it with one or more group names or IDs as arguments:
+#
+#    $ grpshow wheel
+#    $ grpshow 10 marketing
+#
+# More info: https://www.librobert.net/book/internet
+#
+################################################################################
+#
+# Copyright (c) 2019 Robert LA LAU < https://www.librobert.net/ >
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# 1. Redistributions of source code must retain the above copyright notice,
+#    this list of conditions and the following disclaimer.
+#
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+#    this list of conditions and the following disclaimer in the documentation
+#    and/or other materials provided with the distribution.
+#
+# 3. Neither the name of the copyright holder nor the names of its contributors
+#    may be used to endorse or promote products derived from this software
+#    without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+################################################################################
+
+# The group and user databases.
+# Normally, this does not need to be changed.
+GFILE=/etc/group
+PFILE=/etc/passwd
+
+################################################################################
+
+# We need grep.
+GREP=`which grep` || exit 1
+
+# No use running without groups.
+[ -z "$*" ] && {
+	echo "Usage: $0 <group> [group [...]]"
+	exit 1
+}
+
+# Regular expression to find numeric values.
+regexp='^[0-9]+$'
+
+# Loop through arguments.
+for group in $@; do
+	# Find group in group file.
+	if [[ ${group} =~ ${regexp} ]]; then
+		# Group is numeric, so find id (3rd field).
+		gline=`"${GREP}" "^[^:]*:[^:]*:${group}:" "${GFILE}"`
+	else
+		# Find name (1st field).
+		gline=`"${GREP}" "^${group}:" "${GFILE}"`
+	fi
+
+	[ -z "${gline}" ] && {
+		# Group not found.
+		echo " Group : ${group}"
+		echo " No such group."
+		echo
+		continue
+	}
+
+	# Read line into array (after replacing colons with spaces).
+	gline=(${gline//:/ })
+
+	# Group name (1st field).
+	gname=${gline[0]}
+
+	# Group id (3rd field).
+	gid=${gline[2]}
+
+	# Members (4th field).
+	supl=${gline[3]}
+
+	# Get users from password file who have this group as primary group.
+	declare -A prim
+	while read pline; do
+		# The first field is the username.
+		prim[${#prim[*]}]=${pline%%:*}
+	done < <("${GREP}" "^[^:]*:[^:]*:[^:]*:${gid}:" "${PFILE}")
+
+	# Glue users together with commas.
+	prim="${prim[@]}"
+	prim=${prim// /,}
+
+	# Output.
+	echo "                  Group : ${gname} (${gid})"
+	echo "      Primary group for : ${prim:--}"
+	echo "Supplementary group for : ${supl:--}"
+	echo
+
+	# Make sure values are not reused on next loop.
+	unset prim
+done

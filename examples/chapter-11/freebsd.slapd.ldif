@@ -1,0 +1,105 @@
+################################################################################
+#
+# FreeBSD OpenLDAP configuration.
+#
+# /usr/local/etc/openldap/slapd.ldif
+#
+# More info: https://www.librobert.net/book/internet
+#
+################################################################################
+#
+# Copyright (c) 2019 Robert LA LAU < https://www.librobert.net/ >
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# 1. Redistributions of source code must retain the above copyright notice,
+#    this list of conditions and the following disclaimer.
+#
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+#    this list of conditions and the following disclaimer in the documentation
+#    and/or other materials provided with the distribution.
+#
+# 3. Neither the name of the copyright holder nor the names of its contributors
+#    may be used to endorse or promote products derived from this software
+#    without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+################################################################################
+
+dn: cn=config
+objectClass: olcGlobal
+cn: config
+#
+olcArgsFile: /var/run/openldap/slapd.args
+olcPidFile: /var/run/openldap/slapd.pid
+#
+olcTLSCertificateFile: /usr/local/etc/openldap/certs/fullchain.pem
+olcTLSCertificateKeyFile: /usr/local/etc/openldap/certs/privkey.pem
+olcTLSCACertificateFile: /usr/local/etc/openldap/certs/chain.pem
+olcTLSVerifyClient: never
+
+dn: cn=module,cn=config
+objectClass: olcModuleList
+cn: module
+olcModulePath: /usr/local/libexec/openldap
+olcModuleLoad: back_mdb
+
+dn: cn=schema,cn=config
+objectClass: olcSchemaConfig
+cn: schema
+
+include: file:///usr/local/etc/openldap/schema/core.ldif
+include: file:///usr/local/etc/openldap/schema/cosine.ldif
+include: file:///usr/local/etc/openldap/schema/nis.ldif
+
+dn: olcDatabase=frontend,cn=config
+objectClass: olcDatabaseConfig
+objectClass: olcFrontendConfig
+olcDatabase: frontend
+olcAccess: to * by * read
+olcPasswordHash: {SSHA}
+
+# login DN  : cn=config
+# wachtwoord: helloconfig
+dn: olcDatabase=config,cn=config
+objectClass: olcDatabaseConfig
+olcDatabase: config
+olcRootDN: cn=Manager,cn=config
+olcRootPW: {SSHA}Sn+shDsSKusf6sUdlw2kA2D5v23dHJh2
+olcAccess: to * by * none
+
+dn: olcDatabase=mdb,cn=config
+objectClass: olcDatabaseConfig
+objectClass: olcMdbConfig
+olcDatabase: mdb
+olcDbMaxSize: 1073741824
+olcSuffix: dc=example,dc=com
+#
+# login DN  : cn=Manager,dc=example,dc=com
+# wachtwoord: helloldap
+olcRootDN: cn=Manager,dc=example,dc=com
+olcRootPW: {SSHA}tXOobEm/DqrTwUOtsNcg0lxgS7Fp9/QH
+#
+olcDbDirectory: /var/db/openldap-data
+olcAccess: to attrs=userPassword
+  by self write
+  by anonymous auth
+  by dn.base="cn=Manager,dc=example,dc=com" write
+  by * none
+olcAccess: to attrs=shadowLastChange
+  by self write
+  by * read
+olcAccess: to *
+  by dn.exact="cn=Manager,dc=example,dc=com" write
+  by * read

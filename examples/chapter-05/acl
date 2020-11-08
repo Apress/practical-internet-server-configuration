@@ -1,0 +1,106 @@
+################################################################################
+#
+# This file is part of the book
+#    Practical Internet Server Configuration
+#
+# More info: https://www.librobert.net/book/internet
+#
+################################################################################
+#
+# Copyright (c) 2019 Robert LA LAU < https://www.librobert.net/ >
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# 1. Redistributions of source code must retain the above copyright notice,
+#    this list of conditions and the following disclaimer.
+#
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+#    this list of conditions and the following disclaimer in the documentation
+#    and/or other materials provided with the distribution.
+#
+# 3. Neither the name of the copyright holder nor the names of its contributors
+#    may be used to endorse or promote products derived from this software
+#    without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+################################################################################
+
+# Below are the commands necessary to create the directory structure as
+# described in the section on Access Control Lists of chapter 5, as well as
+# the groups and their permissions.
+
+# This is not meant to be executed as a script, but rather to be studied.
+
+################################################################################
+
+
+# Create groups.
+for group in {webdev,jwebdev,uidev,design,cdev,support,marketing,httpd}; do
+	pw groupadd ${group}      # <- BSD
+	groupadd ${group}         # <- Linux
+done
+
+
+# Create user.
+pw useradd webdev -g webdev   # <- BSD
+useradd -g webdev webdev      # <- Linux
+
+
+# Create directories.
+for dir in {config,docs,download,html,images/banners,script,style}; do
+	mkdir -p /srv/www/www.example.com/${dir}
+done
+
+
+# Create files.
+cd /srv/www/www.example.com
+touch index.php config/config.php docs/manual.pdf download/driver.exe \
+  download/driver-source.zip html/page.html images/logo.jpg \
+  images/banners/sale.jpg script/script.js style/style.css
+
+
+# View directory structure.
+# (`tree' may need to be installed first.)
+tree /srv/www/www.example.com
+
+
+# Set initial permissions.
+cd /srv/www
+chown -R webdev:webdev www.example.com
+chmod -R 771 www.example.com
+find ./www.example.com -type f -exec chmod -x {} \;
+
+
+# Set ACL.
+setfacl -R -m group:jwebdev:rwx ./www.example.com
+setfacl -R -m user:httpd:r ./www.example.com
+cd ./www.example.com
+setfacl -R -x group:jwebdev ./config
+setfacl -R -m group:uidev:rwx,group:design:rwx ./images ./style
+setfacl -R -m group:uidev:rwx ./html ./script
+setfacl -R -m group:cdev:rwx ./download
+setfacl -R -m group:support:rwx ./docs
+setfacl -R -m group:marketing:rwx ./docs ./images/banners
+
+
+# List all ACL.
+cd /srv/www
+find ./www.example.com -exec getfacl {} \;
+
+
+# To test:
+# - create some test users
+# - add test users to groups created above
+# - log in as test user
+# - create, edit and delete files and directories
