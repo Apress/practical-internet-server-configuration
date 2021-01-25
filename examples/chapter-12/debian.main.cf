@@ -66,35 +66,12 @@ smtpd_sasl_path = private/auth
 smtpd_sasl_security_options = noanonymous
 smtpd_sasl_local_domain = $myhostname
 
-smtpd_helo_required = yes
-smtpd_helo_restrictions =
-	permit_mynetworks
-	reject_invalid_helo_hostname
-	reject_non_fqdn_helo_hostname
-	reject_unauth_pipelining
-	regexp:/etc/postfix/helo.regexp
-	permit
-
 smtpd_relay_restrictions = 
 	permit_mynetworks
 	permit_sasl_authenticated
 	reject_unauth_destination
 
-strict_rfc821_envelopes = yes
 smtpd_recipient_restrictions = 
 	permit_sasl_authenticated
-	reject_non_fqdn_sender
-	reject_non_fqdn_recipient
-	reject_unauth_destination
-	check_recipient_access hash:/etc/postfix/destinataires
-	reject_unknown_sender_domain
 	permit_mynetworks
-	check_policy_service inet:127.0.0.1:10023
-	reject_rbl_client sbl.spamhaus.org
-	reject_rbl_client xbl.spamhaus.org
-	reject_rbl_client dnsbl.sorbs.net
-	check_policy_service unix:private/policyd-spf
 	permit
-
-smtpd_milters = inet:localhost:8891
-non_smtpd_milters = inet:localhost:8891

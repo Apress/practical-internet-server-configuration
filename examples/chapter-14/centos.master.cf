@@ -1,8 +1,8 @@
 ################################################################################
 #
-# CentOS Postfix parameters.
+# CentOS Postfix daemon processes.
 #
-# /etc/postfix/main.cf
+# /etc/postfix/master.cf
 #
 # More info: https://www.librobert.net/book/internet
 #
@@ -37,41 +37,24 @@
 #
 ################################################################################
 
-smtpd_banner = $myhostname ESMTP $mail_name
-biff = no
-compatibility_level = 2
+smtp		inet	n	-	n	-	-	smtpd
 
-mynetworks_style = host
-myhostname = green.example.com
+submission	inet	n	-	n	-	-	smtpd
+  -o syslog_name=postfix/submission
+  -o smtpd_tls_security_level=encrypt
+  -o smtpd_tls_auth_only=yes
+  -o smtpd_reject_unlisted_recipient=no
+  -o smtpd_client_restrictions=permit_sasl_authenticated,reject
+  -o milter_macro_daemon_name=ORIGINATING
 
-alias_database = hash:/etc/aliases
-alias_maps = hash:/etc/aliases
+dovecot		unix	-	n	n	-	-	pipe
+  flags=DRhu user=vmail:vmail argv=/usr/libexec/dovecot/dovecot-lda -f ${sender} -a ${original_recipient} -d ${user}
 
-virtual_mailbox_domains = example.com example.edu example.org
+policyd-spf unix	-	n	n	-	0	spawn
+  user=policyd-spf argv=/usr/libexec/postfix/policyd-spf
 
-virtual_alias_maps = hash:/etc/postfix/virtual
 
-virtual_transport = dovecot
-dovecot_destination_recipient_limit = 1
-
-smtpd_tls_security_level = may
-smtpd_tls_cert_file = /etc/letsencrypt/live/mx.example.com/fullchain.pem
-smtpd_tls_key_file = /etc/letsencrypt/live/mx.example.com/privkey.pem
-smtpd_tls_session_cache_database = btree:${data_directory}/smtpd_cache
-smtp_tls_session_cache_database = btree:${data_directory}/smtp_cache
-
-smtpd_sasl_auth_enable = yes
-smtpd_sasl_type = dovecot
-smtpd_sasl_path = private/auth
-smtpd_sasl_security_options = noanonymous
-smtpd_sasl_local_domain = $myhostname
-
-smtpd_relay_restrictions = 
-	permit_mynetworks
-	permit_sasl_authenticated
-	reject_unauth_destination
-
-smtpd_recipient_restrictions = 
-	permit_sasl_authenticated
-	permit_mynetworks
-	permit
+# [...]
+#
+# Do not delete existing lines from the file
+# if they do not clash with the lines above.

@@ -1,8 +1,8 @@
 ################################################################################
 #
-# CentOS Postfix parameters.
+# FreeBSD Postfix parameters.
 #
-# /etc/postfix/main.cf
+# /usr/local/etc/postfix/main.cf
 #
 # More info: https://www.librobert.net/book/internet
 #
@@ -49,14 +49,14 @@ alias_maps = hash:/etc/aliases
 
 virtual_mailbox_domains = example.com example.edu example.org
 
-virtual_alias_maps = hash:/etc/postfix/virtual
+virtual_alias_maps = hash:/usr/local/etc/postfix/virtual
 
 virtual_transport = dovecot
 dovecot_destination_recipient_limit = 1
 
 smtpd_tls_security_level = may
-smtpd_tls_cert_file = /etc/letsencrypt/live/mx.example.com/fullchain.pem
-smtpd_tls_key_file = /etc/letsencrypt/live/mx.example.com/privkey.pem
+smtpd_tls_cert_file = /usr/local/etc/letsencrypt/live/mx.example.com/fullchain.pem
+smtpd_tls_key_file = /usr/local/etc/letsencrypt/live/mx.example.com/privkey.pem
 smtpd_tls_session_cache_database = btree:${data_directory}/smtpd_cache
 smtp_tls_session_cache_database = btree:${data_directory}/smtp_cache
 
@@ -66,12 +66,35 @@ smtpd_sasl_path = private/auth
 smtpd_sasl_security_options = noanonymous
 smtpd_sasl_local_domain = $myhostname
 
+smtpd_helo_required = yes
+smtpd_helo_restrictions =
+	permit_mynetworks
+	reject_invalid_helo_hostname
+	reject_non_fqdn_helo_hostname
+	reject_unauth_pipelining
+	regexp:/usr/local/etc/postfix/helo.regexp
+	permit
+
 smtpd_relay_restrictions = 
 	permit_mynetworks
 	permit_sasl_authenticated
 	reject_unauth_destination
 
+strict_rfc821_envelopes = yes
 smtpd_recipient_restrictions = 
 	permit_sasl_authenticated
+	reject_non_fqdn_sender
+	reject_non_fqdn_recipient
+	reject_unauth_destination
+	check_recipient_access hash:/etc/postfix/recipients
+	reject_unknown_sender_domain
 	permit_mynetworks
+	check_policy_service inet:127.0.0.1:10023
+	reject_rbl_client sbl.spamhaus.org
+	reject_rbl_client xbl.spamhaus.org
+	reject_rbl_client dnsbl.sorbs.net
+	check_policy_service unix:private/policyd-spf
 	permit
+
+smtpd_milters = inet:localhost:8891
+non_smtpd_milters = inet:localhost:8891

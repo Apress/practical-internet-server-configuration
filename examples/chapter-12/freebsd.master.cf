@@ -50,9 +50,6 @@ submission	inet	n	-	n	-	-	smtpd
 dovecot		unix	-	n	n	-	-	pipe
   flags=DRhu user=vmail:vmail argv=/usr/local/libexec/dovecot/dovecot-lda -f ${sender} -a ${original_recipient} -d ${user}
 
-policyd-spf unix	-	n	n	-	0	spawn
-  user=policyd-spf argv=/usr/local/bin/policyd-spf
-
 
 # [...]
 #
