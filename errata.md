@@ -1,13 +1,11 @@
-# Errata for *Book Title*
+# Errata for *Practical Internet Server Configuration*
 
-On **page xx** [Summary of error]:
- 
-Details of error here. Highlight key pieces in **bold**.
+Legend:
 
-***
+![Non](images/no.png) : original text
 
-On **page xx** [Summary of error]:
- 
-Details of error here. Highlight key pieces in **bold**.
+![Oui](images/yes.png) : corrected text
 
-***
+---
+
+*Nothing here, yet.*
