@@ -43,8 +43,8 @@ MAILHOME="/srv/mail/${USER}"
 TMPDIR="${MAILHOME}/bogotmp"
 
 mkdir -p "${TMPDIR}" || exit 1
-in=`mktemp --tmpdir="${TMPDIR}" --suffix=.in`
-out=${in/%in/out}
+in=`mktemp "${TMPDIR}/tmp.XXXXXXXXXX"`
+out="${in}.out"
 
 cat > "${in}"
 
