@@ -54,4 +54,4 @@ case $1 in
 		;;
 esac
 
-cat | bogofilter ${FLAG} &
+cat | bogofilter -d "${HOME}/bogofilter" ${FLAG} &

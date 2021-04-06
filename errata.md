@@ -2,10 +2,18 @@
 
 Legend:
 
-![Non](images/no.png) : original text
+![No](images/no.png) : original text
 
-![Oui](images/yes.png) : corrected text
+![Yes](images/yes.png) : corrected text
 
 ---
 
-*Nothing here, yet.*
+**Page 363** : *bogofilter-train.sh*.
+
+![No](images/no.png)
+<pre>cat | bogofilter ${FLAG} &</pre>
+
+![Yes](images/yes.png)
+<pre>cat | bogofilter <strong>-d "${HOME}/bogofilter"</strong> ${FLAG} &</pre>
+
+> This path should correspond to the path used in *bogo-dirs.sh* and *bogofilter-mail.sh*.
