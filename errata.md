@@ -8,6 +8,20 @@ Legend:
 
 ---
 
+**Page 359** : *bogofilter-mail.sh*.
+
+![No](images/no.png)
+<pre>in=`mktemp --tmpdir="${TMPDIR}" --suffix=.in`
+out=${in/%in/out}</pre>
+
+![Yes](images/yes.png)
+<pre>in=`mktemp "${TMPDIR}/tmp.XXXXXXXXXX"`
+out="${in}.out"</pre>
+
+> The syntax for the *mktemp* command differs between Linux and FreeBSD. The original command only worked on Linux; the corrected version is valid for both Linux and FreeBSD.
+
+---
+
 **Page 363** : *bogofilter-train.sh*.
 
 ![No](images/no.png)
