@@ -18,6 +18,10 @@ See the file [Contributing.md](Contributing.md) for more information on how you 
 
 See the file [errata.md](errata.md) for corrections and additions discovered after the publication of the book.
 
+## Addendum
+
+An online addendum, containing a large number of links to additional information and documentation, is available at [librobert.net/book/internet/addendum](https://www.librobert.net/book/internet/addendum.en).
+
 ## About the book
 
 Learn the skills to complete the full installation, configuration, and maintenance of an enterprise class internet server, no matter what Unix-like operating system you prefer. This book will rapidly guide you towards real system administration, with clear explanations along the way.
