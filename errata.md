@@ -8,6 +8,32 @@ Legend:
 
 ---
 
+**Page 332* : Apache Radicale configuration.
+
+![No](images/no.png)
+<pre>RequestHeader set X-Remote-User expr=%{REMOTE_USER}</pre>
+
+![Yes](images/yes.png)
+<pre><strong>RequestHeader set X-Script-Name /</strong>
+RequestHeader set X-Remote-User expr=%{REMOTE_USER}</pre>
+
+> The reverse proxy will not function without the *X-Script-Name* header.
+
+---
+
+**Page 333* : Nginx Radicale configuration.
+
+![No](images/no.png)
+<pre>proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</pre>
+
+![Yes](images/yes.png)
+<pre><strong>proxy_set_header X-Script-Name /;</strong>
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</pre>
+
+> The reverse proxy will not function without the *X-Script-Name* header.
+
+---
+
 **Page 359** : *bogofilter-mail.sh*.
 
 ![No](images/no.png)
