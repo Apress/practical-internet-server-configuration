@@ -8,7 +8,43 @@ Legend:
 
 ---
 
-**Page 332* : Apache Radicale configuration.
+* [Chapter 5](#Chapter_5)
+* [Chapter 13](#Chapter_13)
+* [Chapter 14](#Chapter_14)
+
+---
+
+## <a id="Chapter_5"></a>Chapter 5
+
+**Page 134** : ACL.
+
+Not mentioned, but still important.
+
+ACL are not only used to attribute additional permissions, but also to additionally limit user permissions. In the following example, all users can access the file *notfordiane.txt*, except for *diane*:
+
+<pre>
+$ ls -l ./notfordiane.txt
+-rw-r--r-- 1 dimitri wheel 893 Apr 4 15:43 ./notfordiane.txt
+$ getfacl ./notfordiane.txt
+  file: ./notfordiane.txt
+  owner: dimitri
+  group: wheel
+  user::rw-
+  group:r--
+  user:diane:---
+  mask::r--
+  other::r--
+</pre>
+
+The following command serves to cancel that limitation:
+
+<pre>$ setfacl -x u:diane:--- ./notfordiane.txt</pre>
+
+---
+
+## <a id="Chapter_13"></a>Chapter 13
+
+**Page 332** : Apache Radicale configuration.
 
 ![No](images/no.png)
 <pre>RequestHeader set X-Remote-User expr=%{REMOTE_USER}</pre>
@@ -21,7 +57,7 @@ RequestHeader set X-Remote-User expr=%{REMOTE_USER}</pre>
 
 ---
 
-**Page 333* : Nginx Radicale configuration.
+**Page 333** : Nginx Radicale configuration.
 
 ![No](images/no.png)
 <pre>proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</pre>
@@ -33,6 +69,8 @@ proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</pre>
 > The reverse proxy will not function without the *X-Script-Name* header.
 
 ---
+
+## <a id="Chapter_14"></a>Chapter 14
 
 **Page 359** : *bogofilter-mail.sh*.
 
