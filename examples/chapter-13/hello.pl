@@ -43,7 +43,7 @@
 
 use strict;
 
-printf(<<'EOF', 'Hello world);
+printf(<<'EOF', 'Hello world');
 Content-Type: text/html
 
 <!DOCTYPE html>
