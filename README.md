@@ -8,7 +8,7 @@ Download the files as a zip using the green button, or clone the repository to y
 
 ## Releases
 
-Release v1.0 corresponds to the code in the published book, without corrections or updates.
+[Release v1.0](https://github.com/Apress/practical-internet-server-configuration/releases/tag/v1.0) corresponds to the code in the published book, without corrections or updates.
 
 ## Contributions
 
